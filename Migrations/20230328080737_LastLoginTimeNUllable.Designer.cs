@@ -12,8 +12,8 @@ using Task4AppMvc.Data;
 namespace Task4AppMvc.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230326144007_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230328080737_LastLoginTimeNUllable")]
+    partial class LastLoginTimeNUllable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,15 +34,20 @@ namespace Task4AppMvc.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastLoginTime")
+                    b.Property<DateTime?>("LastLoginTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RegistrationTime")
