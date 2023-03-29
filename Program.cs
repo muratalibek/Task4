@@ -13,7 +13,7 @@ namespace Task4AppMvc
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<DataContext>();
             //builder.Services.AddDbContext<DataContext>();
-
+            builder.Services.AddSession();//crossrequest memory for username and password
             //MSSQL DB Conn:
             string connString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connString));
@@ -38,6 +38,7 @@ namespace Task4AppMvc
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            app.UseSession();//
             app.Run();
         }
     }
