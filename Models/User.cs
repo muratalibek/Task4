@@ -7,6 +7,8 @@ namespace Task4AppMvc.Models
         public Int32 Id { get; set; }
         [Required]
         public string Name { get; set; }
+        [EmailAddress]
+        [Required]
         public string Email { get; set; }
         public DateTime? LastLoginTime { get; set; }
         public DateTime RegistrationTime { get; set; }

@@ -16,7 +16,7 @@ namespace Task4AppMvc.Controllers
         }
         [HttpGet]
         public IActionResult Usermain()
-        {
+        { 
             return View();
         }
         [HttpGet]
@@ -44,12 +44,12 @@ namespace Task4AppMvc.Controllers
             }
             else
             {
-                ViewData["Message"] = "Welcome" + userName;
+                ViewData["Message"] = "Welcome " + userName;
                 userList = _context.Users.ToList();
             }
             return View(userList);
         }
-        [HttpPost]
+        
         public IActionResult Login(string name, string password)
         {
             
@@ -68,49 +68,60 @@ namespace Task4AppMvc.Controllers
                 _context.Users.Update(user);
                 _context.SaveChanges();
                 return RedirectToAction("UserGrid");
-            }
-            
+            } 
         }
         [HttpPost]
         public IActionResult Usermain(string name, string email, string password)
         {
-            var newUser = new User {
-                Name = name,
-                Email = email,
-                Password = password,
-                RegistrationTime = DateTime.Now,
-                LastLoginTime = null,
-                IsActive = true
-            };
-            _context.Add(newUser);
+
+            var userName = HttpContext.Session.GetString("User");
+            
+            if (string.IsNullOrEmpty(userName))
+            {
+                ViewData["Message"] = "You do not have access to this page. Please, Login!";
+            }
+            else
+            {
+                var newUser = new User
+                {
+                    Name = name,
+                    Email = email,
+                    Password = password,
+                    RegistrationTime = DateTime.Now,
+                    LastLoginTime = null,
+                    IsActive = true
+                };
+                _context.Add(newUser);
+            }
             _context.SaveChanges();
             return View();
         }
-        //[HttpDelete]
-        //public async Task<IActionResult> OnPostDelete(int id)
-        //{
-        //    var result = _context.Users.Find(id);
-        //    if (result == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Users.Remove(result);
-        //    _context.SaveChanges();
-
-        //    return RedirectToAction(nameof(UserGrid));
-        //}
-        //https://localhost:7261/User/DeleteUser/3
-        [HttpPost]
-        public IActionResult DeleteUser(int id)
+        /*This code uses the Keys property of the Request.Form collection to get the names of all submitted checkboxes. 
+         * It then filters the list to only include those that start with "Delete-", and extracts the ID from each name. 
+         * Finally, it loops through the list of IDs to delete and removes the corresponding user records from the database.*/
+        [HttpPost("/User/UserGrid")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteUser()
         {
-            var result = _context.Users.Find(id);
-            if (result == null)
+            var idsToDelete = Request.Form.Keys
+                .Where(k => k.StartsWith("Delete-"))
+                .Select(k => int.Parse(k.Substring("Delete-".Length)))
+                .ToList();
+
+            if (idsToDelete.Count == 0)
             {
-                return NotFound();
+                return RedirectToAction(nameof(UserGrid));
             }
 
-            _context.Users.Remove(result);
+            foreach (var id in idsToDelete)
+            {
+                var result = _context.Users.Find(id);
+                if (result != null)
+                {
+                    _context.Users.Remove(result);
+                }
+            }
+
             _context.SaveChanges();
 
             return RedirectToAction(nameof(UserGrid));
