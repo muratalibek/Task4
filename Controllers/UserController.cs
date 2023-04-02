@@ -36,6 +36,7 @@ namespace Task4AppMvc.Controllers
         [HttpGet]
         public IActionResult UserGrid()
         {
+
             var userName = HttpContext.Session.GetString("User");
             var userList = new List<User>();
             if (string.IsNullOrEmpty(userName))
@@ -126,5 +127,22 @@ namespace Task4AppMvc.Controllers
 
             return RedirectToAction(nameof(UserGrid));
         }
+
+        [HttpPost]
+        public IActionResult BlockUsers(int[] ids, bool isActive)
+        {
+            foreach (int id in ids)
+            {
+                var user = _context.Users.FirstOrDefault(u => u.Id == id);
+                if (user != null)
+                {
+                    user.IsActive = isActive;
+                    _context.Users.Update(user);
+                }
+            }
+            _context.SaveChanges();
+            return Ok();
+        }
+
     }
 }

@@ -66,7 +66,23 @@
         </tr>
         }    
 </table>
-    <button type="submit" asp-action="DeleteUser" asp-controller="User" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete selected users?')">Delete Selected Users</button>
+        <button type="submit" asp-action="DeleteUser" asp-controller="User" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete selected users?')">Delete Selected Users</button>
+        <button type="button" id="blockButton" class="btn btn-primary" onclick="blockSelectedUsers(true)">Unblock Selected Users</button>
+        <button type="button" id="unblockButton" class="btn btn-primary" onclick="blockSelectedUsers(false)">Block Selected Users</button>
+    @*<div>
+              <label><input type="checkbox" id="select-all-checkbox"> Select All</label>
+                <label><input type="checkbox" id="unselect-all-checkbox"> Unselect All</label>
+            </div>*@
+            <div>
+                <label>
+                    <input type="checkbox" id="select-all-checkbox">
+                    Select All / Unselect All
+                    <input type="checkbox" id="unselect-all-checkbox" style="display: none;">
+                    <span style="display: none;">Unselect All</span>
+                </label>
+            </div>
+
+
 }
 
 @section Scripts {
@@ -77,3 +93,54 @@
             });
         </script>
 }
+@section Scripts2 {
+    <script>
+        function blockSelectedUsers(isActive) {
+            var selectedRows = $("input.delete-checkbox:checked");
+            var ids = selectedRows.map(function() {
+                return $(this).val();
+            }).get();
+
+            if (ids.length > 0) {
+                $.ajax({
+                    url: "/User/BlockUsers",
+                    type: "POST",
+                    data: { ids: ids, isActive: isActive },
+                    success: function() {
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert("An error occurred while blocking/unblocking selected users.");
+                    }
+                });
+            } else {
+                alert("Please select at least one user to block/unblock.");
+            }
+        }
+    </script>
+}
+<script>
+    // Get the "Select All" and "Unselect All" checkboxes
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const unselectCheckbox = document.getElementById('unselect-all-checkbox');
+
+    // Get all the checkboxes with the name "IsActive"
+    const checkboxes = document.querySelectorAll('input[name="IsActive"]');
+
+    // Add event listener to the "Select All" checkbox
+    selectAllCheckbox.addEventListener('change', function() {
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    });
+
+    // Add event listener to the "Unselect All" checkbox
+    unselectCheckbox.addEventListener('change', function() {
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = false;
+        });
+    });
+</script>
+
+
+
