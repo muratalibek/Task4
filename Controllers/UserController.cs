@@ -77,12 +77,6 @@ namespace Task4AppMvc.Controllers
 
             var userName = HttpContext.Session.GetString("User");
             
-            if (string.IsNullOrEmpty(userName))
-            {
-                ViewData["Message"] = "You do not have access to this page. Please, Login!";
-            }
-            else
-            {
                 var newUser = new User
                 {
                     Name = name,
@@ -93,7 +87,6 @@ namespace Task4AppMvc.Controllers
                     IsActive = true
                 };
                 _context.Add(newUser);
-            }
             _context.SaveChanges();
             return View();
         }
